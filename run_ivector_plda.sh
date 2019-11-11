@@ -20,47 +20,47 @@ exp=exp
 mfccdir=$outdir/mfcc
 vaddir=$outdir/mfcc
 voxceleb1_trials=$$data/$testset.dalai/trials
-# steps/make_plp.sh --nj $nj --cmd "$train_cmd" \
-#   $data/$trainset $exp/make_plp $plpdir
-# steps/make_plp.sh --nj $nj --cmd "$train_cmd" \
-#   $data/$testset $exp/make_plp $plpdir
-# echo "finish"
-# for name in $trainset $testset; do
-#   utils/fix_data_dir.sh data/${name}
-# done
-# 
-# sid/compute_vad_decision.sh --nj $nj --cmd "$train_cmd" \
-#   $data/$trainset $exp/make_vad $vaddir
-# sid/compute_vad_decision.sh --nj $nj --cmd "$train_cmd" \
-#   $data/$testset $exp/make_vad $vaddir
-# 
-# for name in $trainset $testset; do
-#   utils/fix_data_dir.sh data/${name}
-# done
-# 
-# # Train UBM and i-vector extractor.
-# sid/train_diag_ubm.sh --cmd "$train_cmd" \
-#   --nj $nj --num-threads $nj \
-#   $data/$trainset $num_components \
-#   $exp/diag_ubm_$num_components
-# 
-# sid/train_full_ubm.sh --nj $nj --remove-low-count-gaussians false \
-#   --cmd "$train_cmd" $data/$trainset \
-#   $exp/diag_ubm_$num_components $exp/full_ubm_$num_components
-# 
-# sid/train_ivector_extractor.sh --cmd "$train_cmd" --nj $nj --num-threads 1 --num-processes 1\
-#   --ivector-dim 600 \
-#   --num-iters 5 $exp/full_ubm_$num_components/final.ubm $data/$trainset \
-#   $exp/extractor
-# 
-# # Extract i-vectors.
-# sid/extract_ivectors.sh --cmd "$train_cmd" --nj $nj \
-#   $exp/extractor $data/$trainset \
-#   $exp/ivectors_${trainset}
-# 
-# sid/extract_ivectors.sh --cmd "$train_cmd" --nj $nj \
-#   $exp/extractor $data/$testset \
-#   $exp/ivectors_${testset}
+steps/make_plp.sh --nj $nj --cmd "$train_cmd" \
+  $data/$trainset $exp/make_plp $plpdir
+steps/make_plp.sh --nj $nj --cmd "$train_cmd" \
+  $data/$testset $exp/make_plp $plpdir
+echo "finish"
+for name in $trainset $testset; do
+  utils/fix_data_dir.sh data/${name}
+done
+
+sid/compute_vad_decision.sh --nj $nj --cmd "$train_cmd" \
+  $data/$trainset $exp/make_vad $vaddir
+sid/compute_vad_decision.sh --nj $nj --cmd "$train_cmd" \
+  $data/$testset $exp/make_vad $vaddir
+
+for name in $trainset $testset; do
+  utils/fix_data_dir.sh data/${name}
+done
+
+# Train UBM and i-vector extractor.
+sid/train_diag_ubm.sh --cmd "$train_cmd" \
+  --nj $nj --num-threads $nj \
+  $data/$trainset $num_components \
+  $exp/diag_ubm_$num_components
+
+sid/train_full_ubm.sh --nj $nj --remove-low-count-gaussians false \
+  --cmd "$train_cmd" $data/$trainset \
+  $exp/diag_ubm_$num_components $exp/full_ubm_$num_components
+
+sid/train_ivector_extractor.sh --cmd "$train_cmd" --nj $nj --num-threads 1 --num-processes 1\
+  --ivector-dim 600 \
+  --num-iters 5 $exp/full_ubm_$num_components/final.ubm $data/$trainset \
+  $exp/extractor
+
+# Extract i-vectors.
+sid/extract_ivectors.sh --cmd "$train_cmd" --nj $nj \
+  $exp/extractor $data/$trainset \
+  $exp/ivectors_${trainset}
+
+sid/extract_ivectors.sh --cmd "$train_cmd" --nj $nj \
+  $exp/extractor $data/$testset \
+  $exp/ivectors_${testset}
 
 ## Create a PLDA model and do scoring.
 local/plda_scoring_lry.sh $data/$trainset $data/$trainset $data/$testset \

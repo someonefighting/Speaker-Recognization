@@ -32,25 +32,25 @@ if [ "$use_existing_models" == "true" ]; then
   for f in ${plda_ivec_dir}/mean.vec ${plda_ivec_dir}/plda ; do
     [ ! -f $f ] && echo "No such file $f" && exit 1;
   done
-#else
-  #run.pl plda_ivec_dir/log/compute_mean.log \
-  #  ivector-mean scp:${plda_ivec_dir}/ivector.scp \
-  #  plda_ivec_dir/mean.vec || exit 1;
-#   lda_dim=200
-#   run.pl plda_ivec_dir/log/lda.log \
-#     ivector-compute-lda --total-covariance-factor=0.0 --dim=$lda_dim \
-#     "ark:ivector-subtract-global-mean scp:${plda_ivec_dir}/ivector.scp ark:- |" \
-#     ark:$plda_data_dir/utt2spk plda_ivec_dir/transform.mat || exit 1;
-# 
-#   # Train the PLDA model.
-#   run.pl plda_ivec_dir/log/plda.log \
-#     ivector-compute-plda ark:$plda_data_dir/spk2utt \
-#     "ark:ivector-subtract-global-mean scp:${plda_ivec_dir}/ivector.scp ark:- | transform-vec plda_ivec_dir/transform.mat ark:- ark:- | ivector-normalize-length ark:-  ark:- |" \
-#     plda_ivec_dir/plda || exit 1;
-#   #run.pl $plda_ivec_dir/log/plda.log \
-#   #  ivector-compute-plda ark:$plda_data_dir/spk2utt \
-#   #  "ark:ivector-normalize-length scp:${plda_ivec_dir}/ivector.scp  ark:- |" \
-#   #  $plda_ivec_dir/plda || exit 1;
+else
+  run.pl plda_ivec_dir/log/compute_mean.log \
+    ivector-mean scp:${plda_ivec_dir}/ivector.scp \
+    plda_ivec_dir/mean.vec || exit 1;
+  lda_dim=200
+  run.pl plda_ivec_dir/log/lda.log \
+    ivector-compute-lda --total-covariance-factor=0.0 --dim=$lda_dim \
+    "ark:ivector-subtract-global-mean scp:${plda_ivec_dir}/ivector.scp ark:- |" \
+    ark:$plda_data_dir/utt2spk plda_ivec_dir/transform.mat || exit 1;
+ 
+  # Train the PLDA model.
+  run.pl plda_ivec_dir/log/plda.log \
+    ivector-compute-plda ark:$plda_data_dir/spk2utt \
+    "ark:ivector-subtract-global-mean scp:${plda_ivec_dir}/ivector.scp ark:- | transform-vec plda_ivec_dir/transform.mat ark:- ark:- | ivector-normalize-length ark:-  ark:- |" \
+    plda_ivec_dir/plda || exit 1;
+  #run.pl $plda_ivec_dir/log/plda.log \
+  #  ivector-compute-plda ark:$plda_data_dir/spk2utt \
+  #  "ark:ivector-normalize-length scp:${plda_ivec_dir}/ivector.scp  ark:- |" \
+ #  $plda_ivec_dir/plda || exit 1;
  fi
 
 mkdir -p $scores_dir/log
